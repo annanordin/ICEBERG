@@ -121,11 +121,13 @@ for sample in *_R1.fastq.gz; do
     echo "Creating bedgraph for sample $base_name..." >> $LOGFILE
     bedtools genomecov -bg -pc -ibam ${base_name}.bam > ${base_name}.bedgraph
     
+    conda deactivate
     source activate $DEEPTOOLS
     
     # Creating bigwig files
     echo "Creating bigwig for sample $base_name..." >> $LOGFILE
     bamCoverage -b ${base_name}.bam -o ${base_name}.bw -bs 10 -p $THREADS --normalizeUsing RPGC --effectiveGenomeSize 2701495711 -e >> $LOGFILE 2>&1
+    conda deactivate
 
     # Removing intermediate files
     rm ${base_name}*.fastq
@@ -149,6 +151,8 @@ for sample in *_1.bam; do
         done
     done
 done
+
+conda deactivate
 
 # Build aggregates and call peaks with MACS2
 for aggregate in Aggregate1 Aggregate2 Aggregate3; do
@@ -192,9 +196,11 @@ for aggregate in Aggregate1 Aggregate2 Aggregate3; do
     samtools index -@ $THREADS -b ${aggregate}.bam
     
     # Make bigwig of each aggregate for visualization
+    conda deactivate
     source activate $DEEPTOOLS
     echo "Creating bigwig for aggregate $aggregate..." >> $LOGFILE
     bamCoverage -b ${aggregate}.bam -o ${aggregate}.bw -bs 10 -p $THREADS --normalizeUsing RPGC --effectiveGenomeSize 2701495711 -e 
+    conda deactivate
     
 done
 
@@ -202,6 +208,7 @@ done
 source activate $DEEPTOOLS
 echo "Creating ICEBERG bigwig" >> $LOGFILE 
 bigwigAverage -p $THREADS -b Aggregate1.bw Aggregate2.bw Aggregate3.bw -o ICEBERG.bw >> $LOGFILE 2>&1
+conda deactivate
 
 source activate $CUTNRUN
 
@@ -225,6 +232,7 @@ rm del*.bed
 rm temp*.bam
 
 # Make heatmaps of all replicates and ICEBERG bw within ICEBERG peaks
+conda deactivate
 source activate $DEEPTOOLS
 echo "Creating heatmap for ICEBERG peaks" >> $LOGFILE
 computeMatrix reference-point -R ICEBERG_Peaks.bed -S ICEBERG.bw *_*.bw -o matrix -b 2000 -a 2000 -p $THREADS --referencePoint center -bs 50 --missingDataAsZero >> $LOGFILE 2>&1
@@ -264,3 +272,4 @@ rm plot_script.gp Aggregate1_plot_data.txt Aggregate2_plot_data.txt Aggregate3_p
 # Final message
 echo "Pipeline execution completed: $(date)" >> $LOGFILE
 echo "ICEBERG pipeline completed successfully :D :D :D"
+
