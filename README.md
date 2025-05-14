@@ -3,7 +3,7 @@ Scripts to execute the ICEBERG pipeline as described in https://doi.org/10.1093/
 
 This is a fully executable version of ICEBERG, you just put it in a folder with your samples and run it. It is set up as an executable bash script, that should run you through from the raw files to the final ICEBERG peaks and files for visualization, including basic heatmaps, bigwigs, etc. 
 
-Your samples should all be in the same folder with the script, preferably as raw fastq.gz files, named as Target_1, Target_2, etc. and you should have an already processed bam file for your IgG/negative control for peak calling. 
+Your samples should all be in the same folder with the script, preferably as raw fastq.gz files, named as Target_1, Target_2, etc. and you should have an already processed bam file for your IgG/negative control for peak calling. You should have loaded your base conda, and have the environments available to load. If neccessary, change the "source activate" and "conda deactivate" to what is neccessary for your system (mamba, etc.).
 
 You should have one environment with all of the programs needed to run the script, except for deeptools. I have provided a file that can be used to create this environment with the proper programs (package-list-cr.txt). Create a second environment for deeptools (version >= 3.5.4), this is due to incompatabilities with other programs in the main environment. You must provide the names of these two environments in the beginning of the script. 
 
